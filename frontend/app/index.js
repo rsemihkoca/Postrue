@@ -1,12 +1,19 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import HomeBottomImage from "../assets/firstPageBottom.png";
+import { getWidth, getHeight } from "../lib/space";
+import Vector from "../assets/Vector3.js"
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Page() {
+  const insets = useSafeAreaInsets();
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <Image style={{ width: '100%', position: 'absolute', bottom: '0px', }} source={HomeBottomImage} />
+    <View styles={styles.container}>
+        <Vector style={[styles.rightTopImg, {marginTop: -insets.top}]}/>
+        <Text style={styles.text}>Postrue</Text>
+        <Text style={styles.paragraph}>Lorem ipsum dolor sit amet</Text>
+        <Image style={styles.image} source={HomeBottomImage} />
+
       <StatusBar style="auto" />
     </View>
   );
@@ -14,7 +21,40 @@ export default function Page() {
 
 const styles = StyleSheet.create({
   container: {
+    margin: 20,
+    backgroundColor: "#000",
     flex: 1,
-    backgroundColor: '#000',
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderColor: "#0000FF"
+  },
+
+  image: { 
+    marginTop: getHeight(220) ,
+    position: "absolute",
+
+  },
+
+  text: {
+    fontFamily: "Eudoxus-Medium",
+    fontSize: 50,
+    marginTop: getHeight(120),
+    marginHorizontal: getWidth(40),
+
+  },
+
+  rightTopImg: {
+    marginLeft: getWidth(180),
+    position: "absolute",
+  }, 
+
+  paragraph: {
+    marginLeft: getWidth(168),
+    marginRight: getWidth(37),
+    marginTop: getHeight(52),
+    fontFamily: "Eudoxus-Light",
+    fontSize: 18,
+    textAlign: "right",
   },
 });
