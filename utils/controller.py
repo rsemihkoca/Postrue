@@ -1,0 +1,2 @@
+def sendWarning(x):
+    pass
