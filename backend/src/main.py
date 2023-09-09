@@ -1,14 +1,16 @@
 import cv2
 import mediapipe as mp
-
+import math as m
 # Assuming these functions are defined
 def findDistance(x1, y1, x2, y2):
-    # Implement the function to calculate distance between two points
-    return ((x2 - x1)**2 + (y2 - y1)**2)**0.5
+    dist = m.sqrt((x2-x1)**2+(y2-y1)**2)
+    return dist
 
 def findAngle(x1, y1, x2, y2):
-    # Implement the function to calculate angle (placeholder for now)
-    return 0
+    theta = m.acos( (y2 -y1)*(-y1) / (m.sqrt(
+        (x2 - x1)**2 + (y2 - y1)**2 ) * y1) )
+    degree = int(180/m.pi)*theta
+    return degree
 
 def sendWarning():
     # Implement the function to send a warning (placeholder for now)
@@ -81,27 +83,71 @@ while cap.isOpened():
     else:
         cv2.putText(image, str(int(offset)) + ' Not Aligned', (w - 150, 30), font, 0.9, red, 2)
 
-    # Calculate posture inclination and draw landmarks
+    # Calculate angles.
     neck_inclination = findAngle(l_shldr_x, l_shldr_y, l_ear_x, l_ear_y)
     torso_inclination = findAngle(l_hip_x, l_hip_y, l_shldr_x, l_shldr_y)
-    # ... (draw landmarks using cv2.circle and cv2.line as shown in your instructions)
 
-    # Posture detection conditionals
+    # Draw landmarks.
+    cv2.circle(image, (l_shldr_x, l_shldr_y), 7, yellow, -1)
+    cv2.circle(image, (l_ear_x, l_ear_y), 7, yellow, -1)
+
+    # Let's take y - coordinate of P3 100px above x1,  for display elegance.
+    # Although we are taking y = 0 while calculating angle between P1,P2,P3.
+    cv2.circle(image, (l_shldr_x, l_shldr_y - 100), 7, yellow, -1)
+    cv2.circle(image, (r_shldr_x, r_shldr_y), 7, pink, -1)
+    cv2.circle(image, (l_hip_x, l_hip_y), 7, yellow, -1)
+
+    # Similarly, here we are taking y - coordinate 100px above x1. Note that
+    # you can take any value for y, not necessarily 100 or 200 pixels.
+    cv2.circle(image, (l_hip_x, l_hip_y - 100), 7, yellow, -1)
+
+    # Put text, Posture and angle inclination.
+    # Text string for display.
+    angle_text_string = 'Neck : ' + str(int(neck_inclination)) + '  Torso : ' + str(int(torso_inclination))
+
+    # Determine whether good posture or bad posture.
+    # The threshold angles have been set based on intuition.
     if neck_inclination < 40 and torso_inclination < 10:
         bad_frames = 0
         good_frames += 1
-        # ... (annotate image with green text and lines)
+
+        cv2.putText(image, angle_text_string, (10, 30), font, 0.9, light_green, 2)
+        cv2.putText(image, str(int(neck_inclination)), (l_shldr_x + 10, l_shldr_y), font, 0.9, light_green, 2)
+        cv2.putText(image, str(int(torso_inclination)), (l_hip_x + 10, l_hip_y), font, 0.9, light_green, 2)
+
+        # Join landmarks.
+        cv2.line(image, (l_shldr_x, l_shldr_y), (l_ear_x, l_ear_y), green, 4)
+        cv2.line(image, (l_shldr_x, l_shldr_y), (l_shldr_x, l_shldr_y - 100), green, 4)
+        cv2.line(image, (l_hip_x, l_hip_y), (l_shldr_x, l_shldr_y), green, 4)
+        cv2.line(image, (l_hip_x, l_hip_y), (l_hip_x, l_hip_y - 100), green, 4)
+
     else:
         good_frames = 0
         bad_frames += 1
-        # ... (annotate image with red text and lines)
 
-    # Calculate time in each posture
+        cv2.putText(image, angle_text_string, (10, 30), font, 0.9, red, 2)
+        cv2.putText(image, str(int(neck_inclination)), (l_shldr_x + 10, l_shldr_y), font, 0.9, red, 2)
+        cv2.putText(image, str(int(torso_inclination)), (l_hip_x + 10, l_hip_y), font, 0.9, red, 2)
+
+        # Join landmarks.
+        cv2.line(image, (l_shldr_x, l_shldr_y), (l_ear_x, l_ear_y), red, 4)
+        cv2.line(image, (l_shldr_x, l_shldr_y), (l_shldr_x, l_shldr_y - 100), red, 4)
+        cv2.line(image, (l_hip_x, l_hip_y), (l_shldr_x, l_shldr_y), red, 4)
+        cv2.line(image, (l_hip_x, l_hip_y), (l_hip_x, l_hip_y - 100), red, 4)
+
+    # Calculate the time of remaining in a particular posture.
     good_time = (1 / fps) * good_frames
-    bad_time =  (1 / fps) * bad_frames
-    # ... (display time on image)
+    bad_time = (1 / fps) * bad_frames
 
-    # If in bad posture for more than 3 minutes, send a warning
+    # Pose time.
+    if good_time > 0:
+        time_string_good = 'Good Posture Time : ' + str(round(good_time, 1)) + 's'
+        cv2.putText(image, time_string_good, (10, h - 20), font, 0.9, green, 2)
+    else:
+        time_string_bad = 'Bad Posture Time : ' + str(round(bad_time, 1)) + 's'
+        cv2.putText(image, time_string_bad, (10, h - 20), font, 0.9, red, 2)
+
+    # If you stay in bad posture for more than 3 minutes (180s) send an alert.
     if bad_time > 180:
         sendWarning()
 
