@@ -1,11 +1,18 @@
 import React from "react";
-import { View, Text, StyleSheet, Pressable, TouchableHighlight } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  TouchableHighlight,
+} from "react-native";
 import AuthBottom from "../../assets/AuthBottom.js";
 import AuthTop from "../../assets/AuthTop.js";
 import { getHeight, getWidth } from "../../lib/space.js";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FormInput from "../../components/FormInput/FormInput.js";
 import PressableInput from "../../components/PressableInput/PressableInput.js";
+import { router } from "expo-router";
 
 const AuthenticationFrom = () => {
   const insets = useSafeAreaInsets();
@@ -16,12 +23,20 @@ const AuthenticationFrom = () => {
       <View style={styles.main}>
         <Text style={styles.text}>Postrue</Text>
         <View style={styles.form}>
-          <FormInput placeholder={'Username'} />
-          <FormInput autoFocus secureTextEntry={true} placeholder={'Password'} />
+          <FormInput placeholder={"Username"} />
+          <FormInput
+            autoFocus
+            secureTextEntry={true}
+            placeholder={"Password"}
+          />
         </View>
-          <PressableInput underlayColor={'#000'} onPress={()=>{alert('deneme')}} style={{ marginTop: getHeight(42) }}>
-            <Text style={styles.buttonText}>LOGIN</Text>
-          </PressableInput>
+        <PressableInput
+          underlayColor={"#000"}
+          onPress={() => router.replace("/camera")}
+          style={{ marginTop: getHeight(42) }}
+        >
+          <Text style={styles.buttonText}>LOGIN</Text>
+        </PressableInput>
       </View>
       <AuthBottom style={styles.bottom} />
     </View>
