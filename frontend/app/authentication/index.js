@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, TouchableHighlight } from "react-native";
 import AuthBottom from "../../assets/AuthBottom.js";
 import AuthTop from "../../assets/AuthTop.js";
 import { getHeight, getWidth } from "../../lib/space.js";
@@ -19,9 +19,9 @@ const AuthenticationFrom = () => {
           <FormInput placeholder={'Username'} />
           <FormInput autoFocus secureTextEntry={true} placeholder={'Password'} />
         </View>
-        <PressableInput style={{ marginTop: getHeight(42) }}>
-          <Text style={styles.buttonText}>LOGIN</Text>
-        </PressableInput>
+          <PressableInput underlayColor={'#000'} onPress={()=>{alert('deneme')}} style={{ marginTop: getHeight(42) }}>
+            <Text style={styles.buttonText}>LOGIN</Text>
+          </PressableInput>
       </View>
       <AuthBottom style={styles.bottom} />
     </View>

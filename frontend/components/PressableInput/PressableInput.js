@@ -1,15 +1,17 @@
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable, StyleSheet, TouchableHighlight } from "react-native";
 
-function PressableInput({style, onPress, children, ...props }) {
+function PressableInput({ style, onPress, children, underlayColor, ...props }) {
   return (
-    <Pressable
+    <TouchableHighlight
+      activeOpacity={0.6}
+      underlayColor={underlayColor}
+      onPress={onPress}
       style={[styles.container, style
       ]}
-      onPress={onPress}
       {...props}
     >
       {children}
-    </Pressable>
+    </TouchableHighlight>
   );
 }
 
@@ -24,6 +26,7 @@ const styles = StyleSheet.create({
     width: "100%",
     color: "#fff",
   },
+
 });
 
 export default PressableInput;
