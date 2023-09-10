@@ -145,11 +145,17 @@ def calculate_data_for_today():
             # For overall results
             results = session.query(
                 func.count(case(
-                    (Transactions.Result == 'Bad Neck', Transactions.Id),
-                    (Transactions.Result == 'Bad Torso', 1),
-                    (Transactions.Result == 'Bad NeckTorso', 1),
-                    else_=None
-                )).label('TotalCount')
+                    (Transactions.Result == 'Bad Neck', Transactions.Id)
+                    , else_=None)).label('NeckCount'),
+
+                func.count(case(
+                    (Transactions.Result == 'Bad Torso', 1)
+                    , else_=None)).label('TorsoCount'),
+
+                func.count(case(
+                    (Transactions.Result == 'Bad NeckTorso', 1)
+                    , else_=None)).label('NeckTorsoCount'),
+
             ).filter(
                 Transactions.Datetime.between(start_date, end_date)
             ).first()
