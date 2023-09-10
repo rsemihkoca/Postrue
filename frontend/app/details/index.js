@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 import {
   View,
   Text,
@@ -141,7 +142,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100vw",
     justifyContent: "space-between",
-
   },
   topMenu: {
     flexDirection: "row",

@@ -32,7 +32,7 @@ const AuthenticationFrom = () => {
         </View>
         <PressableInput
           underlayColor={"#000"}
-          onPress={() => router.replace("/camera")}
+          onPress={() => router.replace("/route")}
           style={{ marginTop: getHeight(42) }}
         >
           <Text style={styles.buttonText}>LOGIN</Text>
