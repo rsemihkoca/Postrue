@@ -1,8 +1,9 @@
 from database import models
 from database.db import engine
+from database.crud import insertTransaction
 from fastapi import FastAPI, Request, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from utils.operator import calculatePosture
+from utils.operator import calculatePosture, getTime
 import time
 
 models.Base.metadata.create_all(bind=engine)
@@ -34,10 +35,30 @@ async def add_process_time_header(request: Request, call_next):
 @app.post("/posture_detection/")
 async def posture_detection(file: UploadFile = UploadFile(...)):
     # Read image from the request
-    bad_frames, img_base64 = calculatePosture(file)
+    try:
+        bad_frames, img_base64, torso_inclination, neck_inclination = await calculatePosture(file)
 
-    if bad_frames is None:
-        raise HTTPException(status_code=400, detail="Invalid image")
+        Datetime, Year, Month, Day = getTime()
+        data = {}
+        data["Datetime"] = Datetime
+        data["Year"] = Year
+        data["Month"] = Month
+        data["Day"] = Day
+        data["ClientId"] = 1
+        data["ClientName"] = "admin"
+        data["BadPosture"] = bad_frames > 0
+        data["TorsoInclination"] = torso_inclination
+        data["NeckInclination"] = neck_inclination
+
+        if bad_frames is None:
+            raise HTTPException(status_code=400, detail="Invalid image")
+    except Exception as e:
+         raise e
+    else:
+        insertTransaction(data)
+
+
+
 
     # Return the result as a response
     response = {
@@ -46,13 +67,13 @@ async def posture_detection(file: UploadFile = UploadFile(...)):
     }
     return response
 
-@app.get("/transactions/")
-async def transactions(interval: str):
-
-    interval
-    MTD
-    WTD
-    DTD
+# @app.get("/transactions/")
+# async def transactions(interval: str):
+#
+#     interval
+#     MTD
+#     WTD
+#     DTD
 
 
 

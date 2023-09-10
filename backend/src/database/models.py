@@ -6,16 +6,16 @@ from .db import Base
 class Transactions(Base):
     __tablename__ = 'Transactions'
 
-    Datetime = Column(DateTime, primary_key=True)
-    Year = Column(Integer, primary_key=True)
-    Month = Column(Integer, primary_key=True)
-    Day = Column(Integer, primary_key=True)
-    ClientId = Column(Integer, primary_key=True)
+    Id = Column(Integer, primary_key=True, index=True)
+    Datetime = Column(DateTime)
+    Year = Column(Integer)
+    Month = Column(Integer)
+    Day = Column(Integer)
+    ClientId = Column(Integer)
     ClientName = Column(String)
     BadPosture = Column(Boolean)
     TorsoInclination = Column(Float)
     NeckInclination = Column(Float)
-    Status = Column(String)
 
     """
     api:

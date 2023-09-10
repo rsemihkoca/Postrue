@@ -4,7 +4,7 @@ import math as m
 from io import BytesIO
 import numpy as np
 import base64
-
+from datetime import datetime
 # Initialize pose estimation
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(static_image_mode=True)
@@ -32,6 +32,13 @@ def findAngle(x1, y1, x2, y2):
     degree = int(180/m.pi)*theta
     return degree
 
+def getTime():
+    Datetime = datetime.now()
+    Year = Datetime.year
+    Month = Datetime.month
+    Day = Datetime.day
+
+    return Datetime, Year, Month, Day
 
 async def calculatePosture(file):
     good_frames = 0
@@ -111,4 +118,5 @@ async def calculatePosture(file):
     img_bytes = img_encoded.tobytes()
     img_base64 = base64.b64encode(img_bytes).decode('utf-8')
 
-    return bad_frames, img_base64
+    return bad_frames, img_base64, neck_inclination, torso_inclination
+
