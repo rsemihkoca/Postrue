@@ -4,8 +4,6 @@ import HomeBottomImage from "../assets/firstPageBottom.png";
 import { getWidth, getHeight } from "../lib/space";
 import Vector from "../assets/Vector3.js";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-import { FormInput } from "../components";
 import { Link } from "expo-router";
 
 export default function Page() {
@@ -18,7 +16,6 @@ export default function Page() {
         <Text style={styles.paragraph}>Lorem ipsum dolor sit amet</Text>
       </Link>
       <Image style={styles.image} source={HomeBottomImage} />
-      <FormInput />
       <StatusBar style="auto" />
     </View>
   );
@@ -27,12 +24,10 @@ export default function Page() {
 const styles = StyleSheet.create({
   container: {
     margin: 20,
-    backgroundColor: "#000",
     flex: 1,
     borderWidth: 2,
     alignItems: "center",
     justifyContent: "space-between",
-    borderColor: "#0000FF",
   },
 
   image: {
