@@ -57,6 +57,7 @@ async def posture_detection(file: UploadFile = UploadFile(...)):
         data["TorsoInclination"] = torso_inclination
         data["NeckInclination"] = neck_inclination
         data["Result"] = result
+        data["Image"] = img_base64
 
 
     except Exception as e:
@@ -73,7 +74,8 @@ async def posture_detection(file: UploadFile = UploadFile(...)):
 
 @app.get("/daily/")
 async def get_daily_stats():
-    calculate_data_for_today()
+    response = calculate_data_for_today()
+    return response
 
 # @app.get("/weekly/")
 # async def transactions(interval: str):

@@ -17,6 +17,7 @@ class Transactions(Base):
     TorsoInclination = Column(Float)
     NeckInclination = Column(Float)
     Result = Column(String)
+    Image = Column(String)
 
     """
     api:

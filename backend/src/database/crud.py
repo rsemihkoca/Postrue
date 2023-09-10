@@ -1,5 +1,6 @@
 from .db import SessionLocal, engine, Base
 from .models import Transactions
+from . import models
 import time
 from functools import wraps
 from datetime import datetime, timedelta, date
@@ -108,17 +109,17 @@ def calculate_data_for_date_range(session, start_date, end_date):
             raise e
 
 
-def good_percentage_for_date_range(session, start_date, end_date):
+def good_percentage_for_date_range(start_date, end_date):
     with SessionLocal() as session:
         try:
 
-            total_count = session.query(func.count(Transactions.c.Id)).filter(
-                Transactions.c.Datetime.between(start_date, end_date)
+            total_count = session.query(func.count(Transactions.Id)).filter(
+                Transactions.Datetime.between(start_date, end_date)
             ).scalar()
 
-            good_postures_count = session.query(func.count(Transactions.c.Id)).filter(
-                Transactions.c.Datetime.between(start_date, end_date),
-                Transactions.c.Result == 'Good'
+            good_postures_count = session.query(func.count(Transactions.Id)).filter(
+                Transactions.Datetime.between(start_date, end_date),
+                Transactions.Result == 'Good'
             ).scalar()
 
             return (good_postures_count / total_count) if total_count else 0, total_count
@@ -137,29 +138,35 @@ def calculate_data_for_today():
     yesterday_good_percentage = good_percentage_for_date_range(yesterday_start, yesterday_end)
 
     # Calculate the change
-    change = today_good_percentage - yesterday_good_percentage
+    change = today_good_percentage - yesterday_good_percentage[0]
 
     with SessionLocal() as session:
         try:
+            # For overall results
             results = session.query(
-                func.count(case([(Transactions.c.Result == 'Bad Neck', Transactions.c.Id)])).label('NeckCount'),
-                func.count(case([(Transactions.c.Result == 'Bad Torso', Transactions.c.Id)])).label('TorsoCount'),
-                func.count(case([(Transactions.c.Result == 'Bad NeckTorso', Transactions.c.Id)])).label('NeckTorsoCount'),
+                func.count(case(
+                    (Transactions.Result == 'Bad Neck', Transactions.Id),
+                    (Transactions.Result == 'Bad Torso', 1),
+                    (Transactions.Result == 'Bad NeckTorso', 1),
+                    else_=None
+                )).label('TotalCount')
             ).filter(
-                Transactions.c.Datetime.between(start_date, end_date)
+                Transactions.Datetime.between(start_date, end_date)
             ).first()
 
+            # For intervals
             intervals = {}
             for start_hour, end_hour in [(0, 6), (6, 12), (12, 18), (18, 24)]:
                 interval_data = session.query(
-                    func.count(Transactions.c.Id).label('Count'),
-                    func.count(case([(Transactions.c.Result == 'Bad Neck', Transactions.c.Id)])).label('Neck'),
-                    func.count(case([(Transactions.c.Result == 'Bad Torso', Transactions.c.Id)])).label('Torso'),
-                    func.count(case([(Transactions.c.Result == 'Bad NeckTorso', Transactions.c.Id)])).label('NeckTorso'),
+                    Transactions,
+                    func.count(Transactions.Id).label('Count'),
+                    func.count(case([(Transactions.Result == 'Bad Neck', 1)])).label('Neck'),
+                    func.count(case([(Transactions.Result == 'Bad Torso', Transactions.Id)])).label('Torso'),
+                    func.count(case([(Transactions.Result == 'Bad NeckTorso', Transactions.Id)])).label('NeckTorso'),
                 ).filter(and_(
-                    Transactions.c.Datetime.between(start_date, end_date),
-                    func.extract('hour', Transactions.c.Datetime) >= start_hour,
-                    func.extract('hour', Transactions.c.Datetime) < end_hour,
+                    Transactions.Datetime.between(start_date, end_date),
+                    func.extract('hour', Transactions.Datetime) >= start_hour,
+                    func.extract('hour', Transactions.Datetime) < end_hour,
                 )).first()
                 intervals[f"{start_hour}-{end_hour}"] = {
                     'Count': interval_data.Count,
