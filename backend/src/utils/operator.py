@@ -62,7 +62,7 @@ async def calculatePosture(file):
     # Acquire landmark coordinates
     lm = keypoints.pose_landmarks
     if lm is None:
-        return None, None, None, None
+        return None, None, None, None, None
     lmPose = mp_pose.PoseLandmark
     l_shldr_x = int(lm.landmark[lmPose.LEFT_SHOULDER].x * w)
     l_shldr_y = int(lm.landmark[lmPose.LEFT_SHOULDER].y * h)
@@ -118,5 +118,15 @@ async def calculatePosture(file):
     img_bytes = img_encoded.tobytes()
     img_base64 = base64.b64encode(img_bytes).decode('utf-8')
 
-    return bad_frames, img_base64, neck_inclination, torso_inclination
+    if good_frames > bad_frames:
+        Result = 'Good'
+    else:
+        if neck_inclination > 40 and torso_inclination < 13:
+            Result = 'Bad Neck'
+        elif neck_inclination < 40 and torso_inclination > 13:
+            Result = 'Bad Torso'
+        else:
+            Result = 'Bad NeckTorso'
+
+    return bad_frames, img_base64, neck_inclination, torso_inclination, Result
 

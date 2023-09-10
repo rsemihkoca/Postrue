@@ -16,6 +16,7 @@ class Transactions(Base):
     BadPosture = Column(Boolean)
     TorsoInclination = Column(Float)
     NeckInclination = Column(Float)
+    Result = Column(String)
 
     """
     api:

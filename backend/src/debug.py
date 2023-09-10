@@ -1,6 +1,6 @@
 from database import models
 from database.db import engine
-from database.crud import insertTransaction
+from database.crud import insertTransaction, calculate_data_for_today
 from fastapi import FastAPI, Request, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from utils.operator import calculatePosture, getTime
@@ -40,7 +40,7 @@ async def posture_detection(file: UploadFile = UploadFile(...)):
         if not file.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
             raise HTTPException(status_code=400, detail="Uploaded file is not a image")
 
-        bad_frames, img_base64, torso_inclination, neck_inclination = await calculatePosture(file)
+        bad_frames, img_base64, torso_inclination, neck_inclination, result = await calculatePosture(file)
 
         if bad_frames is None:
             raise HTTPException(status_code=400, detail="Invalid image")
@@ -56,6 +56,7 @@ async def posture_detection(file: UploadFile = UploadFile(...)):
         data["BadPosture"] = bad_frames > 0
         data["TorsoInclination"] = torso_inclination
         data["NeckInclination"] = neck_inclination
+        data["Result"] = result
 
 
     except Exception as e:
@@ -70,7 +71,11 @@ async def posture_detection(file: UploadFile = UploadFile(...)):
         }
         return response
 
-# @app.get("/transactions/")
+@app.get("/daily/")
+async def get_daily_stats():
+    calculate_data_for_today()
+
+# @app.get("/weekly/")
 # async def transactions(interval: str):
 #
 #     interval
@@ -78,9 +83,176 @@ async def posture_detection(file: UploadFile = UploadFile(...)):
 #     WTD
 #     DTD
 
-
-
+# @app.get("/monthly/")
+# async def transactions(interval: str):
+#
+#     interval
+#     MTD : first week, second week ...
+#     WTD
+#     DTD
 # Start the FastAPI app using Uvicorn if this script is the main module
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+"""
+{
+    "Data": 
+    {
+        "Type": "Daily",
+        "Average": 0.5, # Daily good posture average
+        "Change": 0.2, # from last day average
+        "TotalCount": 20,
+        "NeckPercentage": 0.1, # Neck count / Total count
+        "TorsoPercentage": 0.2, # Torso count / Total count
+        "NeckTorsoPercentage": 0.7, # NeckTorso count / Total count
+    
+        "Intervals": 
+        {
+            "0-6": # from 0:00 to 6:00
+            {
+                "Count": 10, # Total count
+                "Neck": 7, # Neck count
+                "Torso": 2, # Torso count
+                "NeckTorso": 1 # NeckTorso count
+            },
+            "6-12": # from 6:00 to 12:00
+            {
+                "Count": 3,
+                "Neck": 2, 
+                "Torso": 1,
+                "NeckTorso": 0
+            },
+            "12-18": # from 12:00 to 18:00
+            {
+                "Count": 5,
+                "Neck": 3,
+                "Torso": 1,
+                "NeckTorso": 1
+            },
+            "18-24": # from 18:00 to 24:00
+            {
+                "Count": 2,
+                "Neck": 1,
+                "Torso": 1,
+                "NeckTorso": 0
+            }
+        }
+    }
+}
+
+{
+    "Data": 
+    {
+        "Type": "Weekly",
+        "Average": 0.5, # Weekly good posture average
+        "Change": 0.2, # from last week
+        "TotalCount": 200,
+        "NeckPercentage": 0.1, # Neck count / Total count
+        "TorsoPercentage": 0.2, # Torso count / Total count
+        "NeckTorsoPercentage": 0.7, # NeckTorso count / Total count
+    
+        "Intervals": 
+        {
+            "Monday":
+            {
+                "Count": 10,
+                "Neck": 7,
+                "Torso": 2,
+                "NeckTorso": 1
+            },
+            "Tuesday":
+            {
+                "Count": 3,
+                "Neck": 2,
+                "Torso": 1,
+                "NeckTorso": 0
+            },
+            "Wednesday":
+            {
+                "Count": 5,
+                "Neck": 3,
+                "Torso": 1,
+                "NeckTorso": 1
+            },
+            "Thursday":
+            {
+                "Count": 2,
+                "Neck": 1,
+                "Torso": 1,
+                "NeckTorso": 0
+            },
+            "Friday":
+            {
+                "Count": 5,
+                "Neck": 3,
+                "Torso": 1,
+                "NeckTorso": 1
+            },
+            "Saturday":
+            {
+                "Count": 5,
+                "Neck": 3,
+                "Torso": 1,
+                "NeckTorso": 1
+            },
+            "Sunday":
+            {
+                "Count": 5,
+                "Neck": 3,
+                "Torso": 1,
+                "NeckTorso": 1
+            }
+        }
+    }
+}
+
+
+{
+    "Data": 
+    {
+        "Type": "Monthly",
+        "Average": 0.5, # Monthly good posture average
+        "Change": 0.2, # from last month
+        "TotalCount": 200,
+        "NeckPercentage": 0.1, # Neck count / Total count
+        "TorsoPercentage": 0.2, # Torso count / Total count
+        "NeckTorsoPercentage": 0.7, # NeckTorso count / Total count
+    
+        "Intervals": 
+        {
+            "Week1":
+            {
+                "Count": 10,
+                "Neck": 7,
+                "Torso": 2,
+                "NeckTorso": 1
+            },
+            "Week2":
+            {
+                "Count": 3,
+                "Neck": 2,
+                "Torso": 1,
+                "NeckTorso": 0
+            },
+            "Week3":
+            {
+                "Count": 5,
+                "Neck": 3,
+                "Torso": 1,
+                "NeckTorso": 1
+            },
+            "Week4":
+            {
+                "Count": 2,
+                "Neck": 1,
+                "Torso": 1,
+                "NeckTorso": 0
+            }
+        }
+    }
+}
+
+
+
+"""
