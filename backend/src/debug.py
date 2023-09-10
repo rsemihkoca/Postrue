@@ -1,6 +1,6 @@
 from database import models
 from database.db import engine
-from database.crud import insertTransaction, calculate_data_for_today
+from database.crud import insertTransaction, calculate_data_for_today, calculate_data_for_week, calculate_data_for_month
 from fastapi import FastAPI, Request, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from utils.operator import calculatePosture, getTime
@@ -77,13 +77,10 @@ async def get_daily_stats():
     response = calculate_data_for_today()
     return response
 
-# @app.get("/weekly/")
-# async def transactions(interval: str):
-#
-#     interval
-#     MTD : first week, second week ...
-#     WTD
-#     DTD
+@app.get("/weekly/")
+async def get_weekly_stats():
+    response = calculate_data_for_week()
+    return response
 
 # @app.get("/monthly/")
 # async def transactions(interval: str):

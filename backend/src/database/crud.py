@@ -164,11 +164,19 @@ def calculate_data_for_today():
             intervals = {}
             for start_hour, end_hour in [(0, 6), (6, 12), (12, 18), (18, 24)]:
                 interval_data = session.query(
-                    Transactions,
                     func.count(Transactions.Id).label('Count'),
-                    func.count(case([(Transactions.Result == 'Bad Neck', 1)])).label('Neck'),
-                    func.count(case([(Transactions.Result == 'Bad Torso', Transactions.Id)])).label('Torso'),
-                    func.count(case([(Transactions.Result == 'Bad NeckTorso', Transactions.Id)])).label('NeckTorso'),
+                    func.count(case(
+                        (Transactions.Result == 'Bad Neck', Transactions.Id)
+                        , else_=None)).label('Neck'),
+
+                    func.count(case(
+                        (Transactions.Result == 'Bad Torso', 1)
+                        , else_=None)).label('Torso'),
+
+                    func.count(case(
+                        (Transactions.Result == 'Bad NeckTorso', 1)
+                        , else_=None)).label('NeckTorso'),
+
                 ).filter(and_(
                     Transactions.Datetime.between(start_date, end_date),
                     func.extract('hour', Transactions.Datetime) >= start_hour,
@@ -186,10 +194,17 @@ def calculate_data_for_today():
                 "Average": today_good_percentage,
                 "Change": change,
                 "TotalCount": total_count,
-                "NeckPercentage": results[0]._mapping / total_count if total_count else 0,
-                "TorsoPercentage": results[0]._mapping / total_count if total_count else 0,
-                "NeckTorsoPercentage": results[0]._mapping / total_count if total_count else 0,
+                "NeckPercentage": results.NeckCount / total_count if total_count else 0,
+                "TorsoPercentage": results.TorsoCount / total_count if total_count else 0,
+                "NeckTorsoPercentage": results.NeckTorsoCount / total_count if total_count else 0,
                 "Intervals": intervals
             }
         except Exception as e:
             raise e
+
+
+def calculate_data_for_week():
+    pass
+
+def calculate_data_for_month():
+    pass
