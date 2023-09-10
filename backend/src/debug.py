@@ -82,13 +82,11 @@ async def get_weekly_stats():
     response = calculate_data_for_week()
     return response
 
-# @app.get("/monthly/")
-# async def transactions(interval: str):
-#
-#     interval
-#     MTD : first week, second week ...
-#     WTD
-#     DTD
+@app.get("/monthly/")
+async def get_weekly_stats():
+    response = calculate_data_for_month()
+    return response
+
 # Start the FastAPI app using Uvicorn if this script is the main module
 if __name__ == "__main__":
     import uvicorn
