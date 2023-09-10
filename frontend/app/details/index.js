@@ -90,7 +90,7 @@ const AuthenticationFrom = () => {
             </Text>
           </View>
         </View>
-        {backendData && <Chart backendData={backendData} mode={activeChart} color={colors[activeChart]} />}
+        <Chart backendData={backendData} mode={activeChart} color={colors[activeChart]} />
         <View style={{ marginTop: getHeight(40) }}>
           <Text style={[styles.chartDetailsTitle, { color: colors[activeChart], fontSize: 24 }]}>
             Average Scores
@@ -112,14 +112,14 @@ const AuthenticationFrom = () => {
                 {Math.floor(backendData?.TorsoPercentage * 100)}%
               </Text>
             </View>
-            <View>
+            {/* <View>
               <Text style={[styles.chartDetailsTitle, { color: '#2EAEC5' }]}>
                 Neck&Torso
               </Text>
               <Text style={styles.chartDetailsValue}>
                 {Math.floor(backendData?.NeckTorsoPercentage * 100)}%
               </Text>
-            </View>
+            </View> */}
           </View>
         </View>
         <View style={{ marginTop: getHeight(80) }}>
@@ -168,14 +168,14 @@ const styles = StyleSheet.create({
   },
   name: {
     color: 'black',
-    width: getWidth(143),
+    width: getWidth(143), 
     height: 24,
     marginTop: -10,
     fontSize: 20,
-    fontFamily: 'Eudoxus-SemiBold',
+    fontFamily: 'Eudoxus-Medium',
     fontWeight: '500',
-  },
-  text: {
+  }, 
+  text: { 
     fontFamily: "Eudoxus-Medium",
     textAlign: "left",
     color: "#333333",
@@ -211,17 +211,16 @@ const styles = StyleSheet.create({
   },
 
   chart: {
-    marginTop: getHeight(120),
+    marginTop: getHeight(30),
     marginHorizontal: getWidth(24),
   },
 
   chartTitle: {
-    fontFamily: "Eudoxus-Bold",
+    fontFamily: "Eudoxus-Medium",
     fontSize: 28,
     color: "#333333",
     textAlign: "left",
     height: 38,
-    fontWeight: "bold",
   },
   chartDetails: {
     flexDirection: "row",
@@ -230,7 +229,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   chartDetailsTitle: {
-    fontFamily: "Eudoxus-SemiBold",
+    fontFamily: "Eudoxus-Medium",
     fontSize: 20,
     height: 28,
     textAlign: "center",

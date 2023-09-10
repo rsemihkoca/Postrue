@@ -15,7 +15,7 @@ export default function CameraView() {
   const [currentPosture, setCurrentPosture] = useState(false);
   const [type, setType] = useState(CameraType.front);
   const [permission, requestPermission] = Camera.useCameraPermissions();
-
+ 
   const [camera, setCamera] = useState(null);
 
   const sendPhoto = async (path) => {
@@ -168,7 +168,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 24,
-    fontWeight: "bold",
     color: "white",
     textAlign: "center",
   },
