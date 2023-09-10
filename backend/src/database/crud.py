@@ -186,9 +186,9 @@ def calculate_data_for_today():
                 "Average": today_good_percentage,
                 "Change": change,
                 "TotalCount": total_count,
-                "NeckPercentage": results.NeckCount / total_count if total_count else 0,
-                "TorsoPercentage": results.TorsoCount / total_count if total_count else 0,
-                "NeckTorsoPercentage": results.NeckTorsoCount / total_count if total_count else 0,
+                "NeckPercentage": results[0]._mapping / total_count if total_count else 0,
+                "TorsoPercentage": results[0]._mapping / total_count if total_count else 0,
+                "NeckTorsoPercentage": results[0]._mapping / total_count if total_count else 0,
                 "Intervals": intervals
             }
         except Exception as e:
