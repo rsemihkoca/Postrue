@@ -62,7 +62,7 @@ async def calculatePosture(file):
     # Acquire landmark coordinates
     lm = keypoints.pose_landmarks
     if lm is None:
-        return None, None
+        return None, None, None, None
     lmPose = mp_pose.PoseLandmark
     l_shldr_x = int(lm.landmark[lmPose.LEFT_SHOULDER].x * w)
     l_shldr_y = int(lm.landmark[lmPose.LEFT_SHOULDER].y * h)
@@ -94,7 +94,7 @@ async def calculatePosture(file):
 
     angle_text_string = 'Neck : ' + str(int(neck_inclination)) + '  Torso : ' + str(int(torso_inclination))
 
-    if neck_inclination < 40 and torso_inclination < 10:
+    if neck_inclination < 40 and torso_inclination < 13:
         good_frames += 1
         cv2.putText(image, angle_text_string, (10, 30), font, 0.9, light_green, 2)
         cv2.putText(image, str(int(neck_inclination)), (l_shldr_x + 10, l_shldr_y), font, 0.9, light_green, 2)

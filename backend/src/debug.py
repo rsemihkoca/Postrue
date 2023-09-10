@@ -36,7 +36,14 @@ async def add_process_time_header(request: Request, call_next):
 async def posture_detection(file: UploadFile = UploadFile(...)):
     # Read image from the request
     try:
+        # Check content type
+        if not file.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
+            raise HTTPException(status_code=400, detail="Uploaded file is not a image")
+
         bad_frames, img_base64, torso_inclination, neck_inclination = await calculatePosture(file)
+
+        if bad_frames is None:
+            raise HTTPException(status_code=400, detail="Invalid image")
 
         Datetime, Year, Month, Day = getTime()
         data = {}
@@ -50,28 +57,24 @@ async def posture_detection(file: UploadFile = UploadFile(...)):
         data["TorsoInclination"] = torso_inclination
         data["NeckInclination"] = neck_inclination
 
-        if bad_frames is None:
-            raise HTTPException(status_code=400, detail="Invalid image")
+
     except Exception as e:
          raise e
     else:
         insertTransaction(data)
 
-
-
-
-    # Return the result as a response
-    response = {
-        "bad_posture": bad_frames > 0,
-        "image": img_base64
-    }
-    return response
+        # Return the result as a response
+        response = {
+            "bad_posture": bad_frames > 0,
+            "image": img_base64
+        }
+        return response
 
 # @app.get("/transactions/")
 # async def transactions(interval: str):
 #
 #     interval
-#     MTD
+#     MTD : first week, second week ...
 #     WTD
 #     DTD
 
