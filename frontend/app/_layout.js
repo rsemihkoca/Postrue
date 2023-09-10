@@ -27,7 +27,7 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={{ fontFamily: "Eudoxus-Regular" }}>
+    <SafeAreaView style={{ fontFamily: "Eudoxus-Regular", flex: 1 }}>
       <Slot name="root" onLayout={onLayoutRootView} />
     </SafeAreaView>
   );
