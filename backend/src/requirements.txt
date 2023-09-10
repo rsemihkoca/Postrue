@@ -1,2 +1,6 @@
 mediapipe
 opencv-python
+fastapi
+python-multipart
+numpy
+uvicorn
