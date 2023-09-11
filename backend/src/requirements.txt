@@ -1,0 +1,9 @@
+mediapipe
+opencv-python
+fastapi
+python-multipart
+numpy
+uvicorn
+python-dotenv
+sqlalchemy
+psycopg2-binary
